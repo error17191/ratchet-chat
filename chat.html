@@ -4,21 +4,131 @@
     <meta charset="UTF-8">
     <title>Chat</title>
 </head>
+
+<style>
+    .chat {
+        width: 100%;
+    }
+
+    .chat__messages {
+        height: 300px;
+        max-height: 300px;
+        overflow-y: scroll;
+        border: 1px solid #eee;
+        border-bottom: 0;
+    }
+
+    .chat__message {
+        padding: 20px;
+    }
+
+    .chat__message:nth-child(odd) {
+        background-color: #eee;
+    }
+
+    .chat__input {
+        width: 100%;
+        border-color: #eee;
+        font: inherit;
+        padding: 20px;
+        outline: none;
+    }
+
+    .chat__send {
+        border: 0;
+        border: 1px solid #eee;
+        border-left: 0;
+        background: #fff;
+        width: 100px;
+        cursor: pointer;
+        font: inherit;
+        outline: none;
+    }
+
+    .chat__people {
+        padding: 20px;
+        border: 1px solid #eee;
+        border-top: 0;
+    }
+
+</style>
 <body>
+
+<div id="app">
+    <chat></chat>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 
 <script>
     let socket = new WebSocket('ws://localhost:8080');
-    socket.onopen = function () {
-        socket.send(JSON.stringify({
-            event: 'joined',
-            data: {
-                user: {
-                    id: 1,
-                    name: 'Mohamed Ahmed'
-                }
-            }
-        }));
+
+    let Message = {
+        props: [
+            'message'
+        ],
+        template: `
+                    <div class="chat__message">
+                        <strong>Alex:</strong>: Hello
+                    </div>
+                `
     }
+
+    let Messages = {
+        components: {
+            'message': Message
+        },
+        template: `
+                    <div class="chat__messages">
+                        <message></message>
+                    </div>
+                `,
+    }
+
+    let MessageForm = {
+        template: `
+                    <form action="#">
+                        <textarea class="chat__input" placeholder="Type your message"></textarea>
+                    </form>
+                `,
+    }
+
+    let People = {
+        data() {
+            return {
+                users: []
+            }
+        },
+        template: `
+                <div class="chat__people">
+                    People online: 1
+                    <ul>
+                        <li >Mohamed Ahmed</li>
+                    </ul>
+                </div>
+                `
+    }
+
+    let Chat = {
+        components: {
+            people: People,
+            messages: Messages,
+            'message-form': MessageForm
+        },
+        template: `
+            <div class="chat">
+                <messages></messages>
+                <message-form></message-form>
+                <people></people>
+            </div>
+        `
+    };
+    new Vue({
+        el: '#app',
+        components: {
+            chat: Chat
+        }
+    });
 </script>
 </body>
 </html>
