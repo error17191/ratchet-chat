@@ -32,6 +32,15 @@ class Chat implements MessageComponentInterface
      */
     function onClose(ConnectionInterface $conn)
     {
+        foreach ($this->clients as $client) {
+            $client->send(json_encode([
+                'event' => 'left',
+                'data' => [
+                    'user' => $this->users[$conn->resourceId]
+                ]
+            ]));
+        }
+
         unset($this->clients[$conn->resourceId]);
         unset($this->users[$conn->resourceId]);
     }

@@ -10,6 +10,14 @@ trait ChatEventHandlers
     protected function handleJoined(ConnectionInterface $from, $payload)
     {
         $this->users[$from->resourceId] = $payload->data->user;
-        var_dump($this->users);
+
+        foreach ($this->clients as $client) {
+            $client->send(json_encode([
+                'event' => 'joined',
+                'data' => [
+                    'user' => $payload->data->user
+                ]
+            ]));
+        }
     }
 }
