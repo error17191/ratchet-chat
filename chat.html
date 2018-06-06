@@ -170,7 +170,7 @@
                 <template v-if="!joined">
                     <form @submit.prevent="join">
                         <label for="name">Enter name:
-                            <input type="text" id="text" v-model.trim="name">
+                            <input autocomplete="off" type="text" id="text" v-model.trim="name">
                          </label>
                          <button type="submit">Join Chat</button>
                     </form>

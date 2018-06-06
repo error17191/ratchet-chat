@@ -3,11 +3,13 @@
 namespace App;
 
 
+use App\Events\UserLeft;
+use App\Socket\SocketAbstract;
 use Exception;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
-class Chat implements MessageComponentInterface
+class Chat extends SocketAbstract implements MessageComponentInterface
 {
     use ChatEventHandlers;
 
@@ -41,6 +43,7 @@ class Chat implements MessageComponentInterface
             ]));
         }
 
+        $this->broadcast(new UserLeft($this->users[$conn->resourceId]))->toAll();
         unset($this->clients[$conn->resourceId]);
         unset($this->users[$conn->resourceId]);
     }
