@@ -9,6 +9,8 @@ use Ratchet\MessageComponentInterface;
 
 class Chat implements MessageComponentInterface
 {
+    use ChatEventHandlers;
+
     protected $clients = [];
 
     protected $users = [];
@@ -21,7 +23,6 @@ class Chat implements MessageComponentInterface
     function onOpen(ConnectionInterface $conn)
     {
         $this->clients[$conn->resourceId] = $conn;
-        var_dump(count($this->clients));
     }
 
     /**
@@ -32,6 +33,7 @@ class Chat implements MessageComponentInterface
     function onClose(ConnectionInterface $conn)
     {
         unset($this->clients[$conn->resourceId]);
+        unset($this->users[$conn->resourceId]);
     }
 
     /**
@@ -55,6 +57,8 @@ class Chat implements MessageComponentInterface
     function onMessage(ConnectionInterface $from, $msg)
     {
         $payload = json_decode($msg);
-        $this->users[$from->resourceId] $payload->data->user;
+        if (isset($payload->event) && method_exists($this, $method = 'handle' . ucfirst($payload->event))) {
+            $this->$method($from, $payload);
+        }
     }
 }
