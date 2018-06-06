@@ -109,22 +109,26 @@
                     </ul>
                 </div>
                 `,
-        mounted(){
+        mounted() {
             bus.$on('joined', payload => {
-               this.addUser(payload.user);
+                this.addUser(payload.user);
             });
 
-            bus.$on('left',payload => {
+            bus.$on('left', payload => {
                 this.removeUser(payload.user);
             });
+
+            bus.$on('users', payload => {
+                this.users = payload.users;
+            })
         },
         methods: {
-            addUser(user){
+            addUser(user) {
                 this.users.unshift(user)
             },
-            removeUser(user){
+            removeUser(user) {
                 this.users = this.users.filter(u => {
-                   return user.id !== u.id;
+                    return user.id !== u.id;
                 });
             }
         }
@@ -145,7 +149,7 @@
         mounted() {
             socket.onmessage = e => {
                 let data = JSON.parse(e.data);
-                bus.$emit(data.event,data.data);
+                bus.$emit(data.event, data.data);
             };
         },
         methods: {
