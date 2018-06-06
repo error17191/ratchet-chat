@@ -43,7 +43,7 @@ class Chat implements MessageComponentInterface
      */
     function onError(ConnectionInterface $conn, Exception $e)
     {
-        // TODO: Implement onError() method.
+
     }
 
     /**
@@ -54,6 +54,7 @@ class Chat implements MessageComponentInterface
      */
     function onMessage(ConnectionInterface $from, $msg)
     {
-        var_dump($msg);
+        $payload = json_decode($msg);
+        $this->users[$from->resourceId] $payload->data->user;
     }
 }
