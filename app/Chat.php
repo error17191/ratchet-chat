@@ -9,6 +9,7 @@ use Ratchet\MessageComponentInterface;
 
 class Chat implements MessageComponentInterface
 {
+    protected $clients = [];
 
     /**
      * When a new connection is opened it will be passed to this method
@@ -17,7 +18,8 @@ class Chat implements MessageComponentInterface
      */
     function onOpen(ConnectionInterface $conn)
     {
-        // TODO: Implement onOpen() method.
+        $this->clients[$conn->resourceId] = $conn;
+        var_dump(count($this->clients));
     }
 
     /**
@@ -27,7 +29,7 @@ class Chat implements MessageComponentInterface
      */
     function onClose(ConnectionInterface $conn)
     {
-        // TODO: Implement onClose() method.
+        unset($this->clients[$conn->resourceId]);
     }
 
     /**
