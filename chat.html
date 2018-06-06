@@ -72,7 +72,7 @@
                         <strong>Alex:</strong>: Hello
                     </div>
                 `
-    }
+    };
 
     let Messages = {
         components: {
@@ -83,7 +83,7 @@
                         <message></message>
                     </div>
                 `,
-    }
+    };
 
     let MessageForm = {
         template: `
@@ -91,7 +91,7 @@
                         <textarea class="chat__input" placeholder="Type your message"></textarea>
                     </form>
                 `,
-    }
+    };
 
     let People = {
         data() {
@@ -107,19 +107,43 @@
                     </ul>
                 </div>
                 `
-    }
+    };
 
     let Chat = {
+        data() {
+            return {
+                joined: false,
+                name: ''
+            }
+        },
         components: {
             people: People,
             messages: Messages,
             'message-form': MessageForm
         },
+        methods: {
+            join(){
+                if(!this.name){
+                    return;
+                }
+                this.joined = true;
+            }
+        },
         template: `
             <div class="chat">
-                <messages></messages>
-                <message-form></message-form>
-                <people></people>
+                <template v-if="!joined">
+                    <form @submit.prevent="join">
+                        <label for="name">Enter name:
+                            <input type="text" id="text" v-model.trim="name">
+                         </label>
+                         <button type="submit">Join Chat</button>
+                    </form>
+                </template>
+                <template v-else>
+                    <messages></messages>
+                    <message-form></message-form>
+                    <people></people>
+                </template>
             </div>
         `
     };
