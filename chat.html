@@ -58,7 +58,7 @@
     <chat></chat>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="vue.js"></script>
 
 <script>
     let bus = new Vue();
@@ -71,28 +71,68 @@
         ],
         template: `
                     <div class="chat__message">
-                        <strong>Alex:</strong>: Hello
+                        <strong>{{message.user.name}}:</strong> {{message.body}}
                     </div>
                 `
     };
 
     let Messages = {
+        data() {
+            return {
+                messages: []
+            }
+        },
         components: {
             'message': Message
         },
         template: `
                     <div class="chat__messages">
-                        <message></message>
+                        <message v-for="message in messages" :key="message.id" :message="message"></message>
                     </div>
                 `,
+        mounted() {
+            bus.$on('message', payload => {
+                this.messages.unshift(payload);
+            });
+        }
     };
 
     let MessageForm = {
         template: `
                     <form action="#">
-                        <textarea class="chat__input" placeholder="Type your message"></textarea>
+                        <textarea v-model="body" class="chat__input" placeholder="Type your message"
+                        @keydown="handleInput"></textarea>
                     </form>
                 `,
+        data() {
+            return {
+                body: ''
+            }
+        },
+        methods: {
+            handleInput(e) {
+                if (e.keyCode == 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    this.send();
+                }
+            },
+            send() {
+                let payload = {
+                    event: 'message',
+                    data: {
+                        id: Date.now(),
+                        body: this.body,
+                        user: {
+                            name: 'You'
+                        }
+                    }
+                };
+
+                bus.$emit('message', payload.data);
+                socket.send(JSON.stringify(payload));
+                this.body = null;
+            }
+        }
     };
 
     let People = {
