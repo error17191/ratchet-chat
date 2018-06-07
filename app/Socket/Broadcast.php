@@ -34,6 +34,7 @@ class Broadcast
 
     public function toAllExcept(ConnectionInterface $connection)
     {
+        echo "{$this->event}\n";
         foreach ($this->clients as $client) {
             if ($client !== $connection) {
                 $client->send($this->event);

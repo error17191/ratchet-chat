@@ -34,10 +34,14 @@ class Chat extends SocketAbstract implements MessageComponentInterface
      */
     function onClose(ConnectionInterface $conn)
     {
+        if (!isset($this->users[$conn->resourceId])) {
+            unset($this->clients[$conn->resourceId]);
+            return;
+        }
+
         $user = $this->users[$conn->resourceId];
-
-
         $this->broadcast(new UserLeft($user))->toAll();
+
         unset($this->clients[$conn->resourceId]);
         unset($this->users[$conn->resourceId]);
     }

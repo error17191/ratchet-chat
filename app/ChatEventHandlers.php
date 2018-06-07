@@ -3,18 +3,27 @@
 namespace App;
 
 
+use App\Events\Message;
 use App\Events\UserJoined;
 use App\Events\Users;
 use Ratchet\ConnectionInterface;
 
 trait ChatEventHandlers
 {
-    protected function handleJoined(ConnectionInterface $from, $payload)
+    protected function handleMessage(ConnectionInterface $connection, $payload)
+    {
+        $user = $this->users[$connection->resourceId];
+        $message = $payload->data;
+
+        $this->broadcast(new Message($user, $message))->toAllExcept($connection);
+    }
+
+    protected function handleJoined(ConnectionInterface $connection, $payload)
     {
         $user = $payload->data->user;;
-        $this->users[$from->resourceId] = $user;
+        $this->users[$connection->resourceId] = $user;
 
-        $this->broadcast(new UserJoined($payload->data->user))->toAllExcept($from);
-        $this->broadcast(new Users($this->users))->to($from);
+        $this->broadcast(new UserJoined($payload->data->user))->toAllExcept($connection);
+        $this->broadcast(new Users($this->users))->to($connection);
     }
 }
